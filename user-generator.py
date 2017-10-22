@@ -28,6 +28,7 @@ if sys.platform.startswith('win'):
 #username counter
 n=0
 default_surnames = "Top_World_Surnames_ByDefault.txt"
+
 def banner():
     print('''%s
                              __    __       _______  _______  ______      
@@ -54,24 +55,24 @@ def parser_error(errmsg):
 def parse_args():
     parser = argparse.ArgumentParser(description='Generate usernames with different alphanumeric combinations.')
     parser.error = parser_error
-    parser._positionals.title = "FILES REQUIRED"
-    parser._optionals.title = "OPTIONS"
+    parser._positionals.title = "REQUIRED PARAMETERS"
+    parser._optionals.title = "OPTIONAL PARAMETERS"
     #Files
-    parser.add_argument("Names", help="The path of the file containing the dictionary with names.")
-    parser.add_argument("-s", "--surnames", help="The path of the file containing the dictionary with surnames. If none is specified, the 16 most common world surnames will be used")
-    parser.add_argument("-o", "--output", help="If you want to specify the name of the output file. Default is usernames.txt", default="usernames.txt")
-    parser.add_argument("-ef", "--emailsfile", help="If you want to specify the name of the output file for emails. Default is emails.txt", default="emails.txt")
-    parser.add_argument("-lf", "--leetfile", help="If you want to specify the output file name for usernames in leet format. Default is leet", default="leet.txt")
+    parser.add_argument("Names", help="The file containing the names.")
+    parser.add_argument("-s", "--surnames", help="The path of the file containing the surnames. If none is specified, the 16 most common world surnames will be used")
+    parser.add_argument("-o", "--output", help="The output name file. Default is usernames.txt", default="usernames.txt")
+    parser.add_argument("-ef", "--emailsfile", help="The output file name for emails. Default is emails.txt", default="emails.txt")
+    parser.add_argument("-lf", "--leetfile", help="The output file name for usernames in leet format. Default is leet.txtt", default="leet.txt")
     # Options
     parser.add_argument("-mC", "--min-chars", help="The minimum number of chars from the username. Default is 1.", type=int, default=1)
     parser.add_argument("-xC", "--max-chars", help="The maximum number of chars from the Name. Default is 25.", type=int, default=25)
     parser.add_argument("-mY", "--min-year", help="The year it starts. Default is 1942...No country for old men)", type=int, default=1942)
     parser.add_argument("-xY", "--max-year", help="The year it ends. Default is 2018.", type=int, default=2018)
-    parser.add_argument("-n", "--number", help="Add a especific number. Default is None.", type=int, nargs='+')
+    parser.add_argument("-n", "--number", help="Add a specific number. Default is None.", type=int, nargs='+')
     parser.add_argument("-u", "--union", help="Select if you want a binding character [_ . - ] etc. Default is None. ", nargs='+', default="")
     parser.add_argument("-e", "--email", help="Select if you want email usernames [gmail.com hotmail.us] etc. Default is None. ", nargs='+')
     parser.add_argument("-l", "--leet", help="To convert to leet format [username -> us3rn4m3]. 1:[e, o] 2:[a, e, i, o] 3:[a, e, i, o, s, t] 4:[a, e, i, o, s, t, l, b, g]. Default is None. ", type=int, choices=[1, 2, 3, 4])
-    parser.add_argument("-m", "--mode", help="If you want the results to be appended to the file or to overwrite. Default is overWrite.", choices=["a", "w"], default="w")
+    parser.add_argument("-m", "--mode", help="Results can be added or overwritten. Default is to overwrite.", choices=["a", "w"], default="w")
     parser.add_argument("-d", "--delduplicates", action='store_true', help="Sometimes the surnames are used as names and vice versa and this generates duplicates.")
     return parser.parse_args()
 
