@@ -2,7 +2,7 @@
 Generate usernames with different alphanumeric combinations.
 
 FILES REQUIRED:
-  Names                 The path of the file containing the dictionary with names.
+  Names - The path of the file containing the dictionary with names.
 
 OPTIONS:
 
