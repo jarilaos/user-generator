@@ -79,9 +79,10 @@ def parse_args():
 def create_surnames_file():
     results.surnames = default_surnames
     with open(results.surnames, 'w') as outfile:
-        data = ['smith', 'garcia', 'gonzalez', 'hernandez', 'smirnov', 'müller', 'lee', 'li', 'zhang', 'wang', 'chang', 'nguyen', 'kumar', 'martin', 'silva', 'rossi', 'johnson']
+        data = ['smith', 'garcia', 'gonzalez', 'hernandez', 'lee', 'li', 'zhang', 'wang', 'chang', 'nguyen','kumar', 'martin', 'smirnov', 'müller', 'silva', 'rossi', 'johnson']
         for line in data:
             outfile.write("%s\n"%line)
+
 
 def leet(line):
     if results.leet == 1:
@@ -143,14 +144,26 @@ def add_numbers(line):
                 outfile.write("%s%s%d\n" % (line, union, i))
                 n+=1
 
+def create_emails(file):
+    print (Y+"[+]Generating emails..."+W)
+    with open(file, 'r') as reader:
+        with open (results.emailsfile, results.mode.lower()) as outfile:
+            data = reader.read().splitlines() 
+            for e in results.email:
+                for line in data:
+                    outfile.write("%s@%s\n" % (line, e))
+    print (Y+"[+]Emails dictionary: "+G+results.emailsfile+W)
+
 
 if __name__ == "__main__":
     results = parse_args()
     banner()
 
     if results.surnames is None:
-        create_surnames_file()      
+        create_surnames_file()
 
+    print (Y+"[+]Generating usernames..."+W)
+    lines_stored = set()
     with open(results.output, results.mode.lower()) as outfile:
         with open(results.surnames, 'r') as reader:
             data = reader.read().splitlines() 
@@ -203,37 +216,44 @@ if __name__ == "__main__":
                             outfile.write("%s%s%s\n" % (name, union, line))
                             n+=1
 
-        print ("Usernames generated:"+G+str(n))
-        print (W+"Usernames dictionary: "+G+results.output+W)
+        print (Y+"[+]Usernames generated:  "+G+str(n))
+        print (Y+"[+]Usernames dictionary: "+G+results.output+W)
 
     if results.surnames == default_surnames:
         os.remove(results.surnames)
 
     if results.delduplicates:
+        print (Y+"[+]Deleting duplicates..."+W)
         n=0
         lines_stored = set()
         with open("temp", "w") as outfile:
             with open(results.output, "r") as reader:
                 for line in reader:
                     if line not in lines_stored:
-                        outfile.write(line)
                         lines_stored.add(line)
+                        outfile.write(line)
                         n+=1
         os.rename("temp", results.output) 
-        print ("Usernames after delete duplicates: "+G+str(n)+W)
+        print (Y+"[+]Usernames after delete duplicates: "+G+str(n)+W)
 
     if results.leet is not None:
-        with open(results.output, 'r') as reader, open (results.leetfile, results.mode.lower()) as outfile:
-            data = reader.read().splitlines() 
-            for line in data:
-                outfile.write("%s\n" % (leet(line)))
-        print ("Leet dictionary: "+G+results.leetfile+W)   
-
-    if results.email is not None:
-        with open(results.output, 'r') as reader, open (results.emailsfile, results.mode.lower()) as outfile:
-            data = reader.read().splitlines() 
-            for e in results.email:
+        print (Y+"[+]Generating leet usernames..."+W)
+        lines_stored = set()
+        n=0
+        with open(results.output, 'r') as reader:
+            with open (results.leetfile, results.mode.lower()) as outfile:
+                data = reader.read().splitlines() 
                 for line in data:
-                    outfile.write("%s@%s\n" % (line, e))
-        print ("Emails dictionary: "+G+results.emailsfile+W)
+                    leetline=leet(line)
+                    if leetline not in lines_stored:
+                        lines_stored.add(leetline)
+                        outfile.write("%s\n" % leetline)
+                        n+=1
 
+        print (Y+"[+]Leet usernames generated:  "+G+str(n))
+        print (Y+"[+]Leet dictionary:           "+G+results.leetfile+W)   
+        if results.email is not None:
+            create_emails(results.leetfile)
+
+    elif results.email is not None:
+        create_emails(results.output)
