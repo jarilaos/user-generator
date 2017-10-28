@@ -27,7 +27,6 @@ if sys.platform.startswith('win'):
         G = Y = B = R = W = ''
 #username counter
 n=0
-default_surnames = "Top_World_Surnames_ByDefault.txt"
 
 def banner():
     print('''%s
@@ -45,7 +44,6 @@ def banner():
       \______| |_______||__| \__| |_______||__| `._____/__/     \__\  |__|      \______/  |__| `._____|%s
       '''% (Y,W))
 
-
 def parser_error(errmsg):
     banner()
     print("Usage: python " + sys.argv[0] + " [Options] use -h for help")
@@ -59,7 +57,7 @@ def parse_args():
     parser._optionals.title = "OPTIONAL PARAMETERS"
     #Files
     parser.add_argument("Names", help="The file containing the names.")
-    parser.add_argument("-s", "--surnames", help="The path of the file containing the surnames. If none is specified, the 16 most common world surnames will be used")
+    parser.add_argument("-s", "--surnames", help="The path of the file containing the surnames. default is None")
     parser.add_argument("-o", "--output", help="The output name file. Default is usernames.txt", default="usernames.txt")
     parser.add_argument("-ef", "--emailsfile", help="The output file name for emails. Default is emails.txt", default="emails.txt")
     parser.add_argument("-lf", "--leetfile", help="The output file name for usernames in leet format. Default is leet.txtt", default="leet.txt")
@@ -75,14 +73,6 @@ def parse_args():
     parser.add_argument("-m", "--mode", help="Results can be added or overwritten. Default is to overwrite.", choices=["a", "w"], default="w")
     parser.add_argument("-d", "--delduplicates", action='store_true', help="Sometimes the surnames are used as names and vice versa and this generates duplicates.")
     return parser.parse_args()
-
-def create_surnames_file():
-    results.surnames = default_surnames
-    with open(results.surnames, 'w') as outfile:
-        data = ['smith', 'garcia', 'gonzalez', 'hernandez', 'lee', 'li', 'zhang', 'wang', 'chang', 'nguyen','kumar', 'martin', 'smirnov', 'müller', 'silva', 'rossi', 'johnson']
-        for line in data:
-            outfile.write("%s\n"%line)
-
 
 def leet(line):
     if results.leet == 1:
@@ -158,32 +148,8 @@ def create_emails(file):
 if __name__ == "__main__":
     results = parse_args()
     banner()
-
-    if results.surnames is None:
-        create_surnames_file()
-
     print (Y+"[+]Generating usernames..."+W)
-    lines_stored = set()
-    with open(results.output, results.mode.lower()) as outfile:
-        with open(results.surnames, 'r') as reader:
-            data = reader.read().splitlines() 
-            for line in data:
-                if len(line) >= results.min_chars and len(line) <= results.max_chars:
-                    outfile.write("%s\n"%line)
-                    n+=1
-                #Letter+Surname    
-                if len(line) >= results.min_chars-1 and len(line) <= results.max_chars-1:
-                    for letter in string.ascii_lowercase:
-                        outfile.write("%s%s\n" % (letter,line))
-                        n+=1
-                #Letter+Union+Surname 
-                if len(line) >= results.min_chars-2 and len(line) <= results.max_chars-2:
-                    for union in results.union:
-                        for x in string.ascii_lowercase:
-                            outfile.write("%s%s%s\n" % (x,union,line))
-                            n+=1
-                add_numbers(line)
-        
+    with open(results.output, results.mode.lower()) as outfile:      
         with open(results.Names, 'r') as names:
             data = names.read().splitlines() 
             for name in data:
@@ -201,26 +167,43 @@ if __name__ == "__main__":
                         for x in string.ascii_lowercase:
                             outfile.write("%s%s%s\n" % (name,union,x))
                             n+=1
-                add_numbers(name)  
+                add_numbers(name)
 
-        with open(results.surnames, 'r') as reader , open(results.Names, 'r') as reader2:
-            surnames = reader.read().splitlines()
-            names = reader2.read().splitlines()
-            for line in surnames:
-                for name in names:
-                    if len(name+line) >= results.min_chars and len(name+line) <= results.max_chars:
-                        outfile.write("%s%s\n" % (name, line))
+        if results.surnames is not None:
+            with open(results.surnames, 'r') as reader:
+                data = reader.read().splitlines() 
+                for line in data:
+                    if len(line) >= results.min_chars and len(line) <= results.max_chars:
+                        outfile.write("%s\n"%line)
                         n+=1
-                    if len(name+line) >= results.min_chars-1 and len(name+line) <= results.max_chars-1:
-                        for union in results.union:
-                            outfile.write("%s%s%s\n" % (name, union, line))
+                    #Letter+Surname    
+                    if len(line) >= results.min_chars-1 and len(line) <= results.max_chars-1:
+                        for letter in string.ascii_lowercase:
+                            outfile.write("%s%s\n" % (letter,line))
                             n+=1
+                    #Letter+Union+Surname 
+                    if len(line) >= results.min_chars-2 and len(line) <= results.max_chars-2:
+                        for union in results.union:
+                            for x in string.ascii_lowercase:
+                                outfile.write("%s%s%s\n" % (x,union,line))
+                                n+=1
+                    add_numbers(line)
+
+            with open(results.surnames, 'r') as reader , open(results.Names, 'r') as reader2:
+                surnames = reader.read().splitlines()
+                names = reader2.read().splitlines()
+                for line in surnames:
+                    for name in names:
+                        if len(name+line) >= results.min_chars and len(name+line) <= results.max_chars:
+                            outfile.write("%s%s\n" % (name, line))
+                            n+=1
+                        if len(name+line) >= results.min_chars-1 and len(name+line) <= results.max_chars-1:
+                            for union in results.union:
+                                outfile.write("%s%s%s\n" % (name, union, line))
+                                n+=1
 
         print (Y+"[+]Usernames generated:  "+G+str(n))
         print (Y+"[+]Usernames dictionary: "+G+results.output+W)
-
-    if results.surnames == default_surnames:
-        os.remove(results.surnames)
 
     if results.delduplicates:
         print (Y+"[+]Deleting duplicates..."+W)
