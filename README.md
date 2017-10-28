@@ -7,7 +7,7 @@ Generate usernames with different alphanumeric combinations.
                
 | Short Form |     Long Form     | Description |
 | ---------- | ----------------- | ------------ |
-| -s  | --surnames | The file containing the surnames. If none is specified, the 16 most common world surnames will be used |
+| -s  | --surnames | The file containing the surnames. Default is None |
 | -o  | --output | The output name file. Default is usernames.txt |
 | -ef | --leetfile | The output file name for emails. Default is emails.txt  |
 | -lf | --emailsfile | The output file name for usernames in leet format. Default is leet.txt |
